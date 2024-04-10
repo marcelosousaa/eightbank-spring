@@ -26,7 +26,6 @@ public class ClientController {
     @Autowired
     ClientService clientService;
 
-    @Autowired
     ModelMapper modelMapper;
 
     @PostMapping("/add")

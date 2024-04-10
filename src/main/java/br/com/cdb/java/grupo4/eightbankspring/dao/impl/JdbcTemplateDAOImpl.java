@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JdbcTemplateDAOImpl implements IJdbcTemplateDAO {
-    @Autowired
+
     private JdbcTemplate jdbcTemplate;
 
     @Override
