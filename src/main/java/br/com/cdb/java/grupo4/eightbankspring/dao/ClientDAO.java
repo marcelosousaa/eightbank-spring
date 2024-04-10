@@ -13,12 +13,22 @@ import java.util.Objects;
 
 public class ClientDAO {
 
-    List<Client> clientList = new ArrayList<>();
+    List<Client> clientList;
 
     public ClientDAO() {
         this.clientList = new ArrayList<>();
-        // Inicializar a lista de clientes
     }
+
+    public void save(Client client){
+        client.setId(clientList.size() + 1);
+        clientList.add(client);
+    }
+
+    public List<Client> listAll(){
+        return this.clientList;
+    }
+
+
 
     public void addClient(Client client) {
         client.setId(clientList.size() + 1);
