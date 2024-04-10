@@ -7,11 +7,14 @@ import br.com.cdb.java.grupo4.eightbankspring.exceptions.InvalidValueException;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.CurrentAccount;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.SavingsAccount;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 public class AccountService {
-    AccountDAO accountDAO = new AccountDAO();
+
+    @Autowired
+    AccountDAO accountDAO;
 
     public Account createCurrentAccount(String ownerCpf, double accountFee) {
         double balance = 0;

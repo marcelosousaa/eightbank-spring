@@ -1877,4 +1877,15 @@ public class ClientService {
     public List<Client> getClients() {
         return clientDAO.listAll();
     }
+
+    public List<Account> listClientAccounts(String cpf) {
+        List<Account> foundAccountsList = null;
+
+        try{
+            foundAccountsList = accountService.findAccountsByCPF(cpf);
+        } catch (AccountNotFoundException e){
+            System.out.println("Não foram localizadas contas para este CPF!");
+        }
+        return foundAccountsList;
+    }
 }

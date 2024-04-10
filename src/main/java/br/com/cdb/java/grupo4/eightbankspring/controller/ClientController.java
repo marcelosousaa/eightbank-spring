@@ -1,12 +1,15 @@
 package br.com.cdb.java.grupo4.eightbankspring.controller;
 
 import br.com.cdb.java.grupo4.eightbankspring.dtos.ClientDTO;
+import br.com.cdb.java.grupo4.eightbankspring.exceptions.AccountNotFoundException;
+import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import br.com.cdb.java.grupo4.eightbankspring.usecase.ClientService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.AccessibleObject;
 import java.util.List;
 
 @RestController
@@ -34,6 +37,9 @@ public class ClientController {
     public List<Client> getAllClients(){
         return clientService.getClients();
     }
+
+    @GetMapping("/{cpf}/accounts")
+    public List<Account> showClientAccounts(@PathVariable String cpf){ return clientService.listClientAccounts(cpf);}
 
 
 
