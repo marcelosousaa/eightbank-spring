@@ -1,21 +1,25 @@
 package br.com.cdb.java.grupo4.eightbankspring.controller;
 
 import br.com.cdb.java.grupo4.eightbankspring.dtos.ClientDTO;
-import br.com.cdb.java.grupo4.eightbankspring.exceptions.AccountNotFoundException;
+import br.com.cdb.java.grupo4.eightbankspring.model.StandardResponse;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import br.com.cdb.java.grupo4.eightbankspring.usecase.ClientService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.AccessibleObject;
 import java.util.List;
 
 @RestController
 @RequestMapping("/client")
 
 public class ClientController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientController.class);
 
     @Autowired
     ClientService clientService;
@@ -24,9 +28,19 @@ public class ClientController {
     ModelMapper modelMapper;
 
     @PostMapping("/add")
-    public void addClient(@RequestBody ClientDTO clientDTO){
+    public ResponseEntity<?> addClient(@RequestBody ClientDTO clientDTO){
+        long startTime = System.currentTimeMillis();
+
         Client convertedClient = convertToEntity(clientDTO);
         clientService.addClient(convertedClient);
+
+        ResponseEntity<StandardResponse> ok =
+                ResponseEntity.ok(StandardResponse.builder().message("Cliente cadastrado com sucesso!").build());
+
+        long endTime = System.currentTimeMillis();
+        long timeElapsed = endTime - startTime;
+        LOGGER.info("Tempo decorrido: " + timeElapsed + " milissegundos.");
+        return ok;
     }
 
     private Client convertToEntity(ClientDTO clientDTO){
@@ -40,8 +54,4 @@ public class ClientController {
 
     @GetMapping("/{cpf}/accounts")
     public List<Account> showClientAccounts(@PathVariable String cpf){ return clientService.listClientAccounts(cpf);}
-
-
-
-
 }

@@ -1,6 +1,7 @@
 package br.com.cdb.java.grupo4.eightbankspring.model.client;
 
 public class Address {
+    private long id;
     private String streetName;
     private long number;
     private String district;
@@ -26,6 +27,10 @@ public class Address {
         this.state = state;
         this.zipCode = zipCode;
         this.addressComplement = addressComplement;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getStreetName() {

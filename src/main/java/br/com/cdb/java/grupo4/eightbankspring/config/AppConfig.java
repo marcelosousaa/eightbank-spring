@@ -1,15 +1,18 @@
 package br.com.cdb.java.grupo4.eightbankspring.config;
 
-import br.com.cdb.java.grupo4.eightbankspring.dao.AccountDAO;
-import br.com.cdb.java.grupo4.eightbankspring.dao.CardDAO;
-import br.com.cdb.java.grupo4.eightbankspring.dao.ClientDAO;
-import br.com.cdb.java.grupo4.eightbankspring.dao.InsuranceDAO;
+import br.com.cdb.java.grupo4.eightbankspring.dao.*;
+import br.com.cdb.java.grupo4.eightbankspring.dao.impl.JdbcTemplateDAOImpl;
 import br.com.cdb.java.grupo4.eightbankspring.dtos.ClientDTO;
-import br.com.cdb.java.grupo4.eightbankspring.model.insurance.Insurance;
 import br.com.cdb.java.grupo4.eightbankspring.usecase.*;
+import lombok.Value;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class AppConfig {
@@ -63,5 +66,21 @@ public class AppConfig {
     @Bean
     public InsuranceDAO insuranceDAO(){
         return new InsuranceDAO();
+    }
+
+    @Bean
+    public JdbcTemplateDAOImpl jdbcTemplateDAO(){
+        return new JdbcTemplateDAOImpl();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix="datasource")
+    public DataSource eightbankDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate(){
+        return new JdbcTemplate(eightbankDataSource());
     }
 }

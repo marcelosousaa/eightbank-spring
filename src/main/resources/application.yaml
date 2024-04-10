@@ -1,1 +1,15 @@
-spring.application.name=Eightbank - Banco Digital
+spring:
+  application:
+    name: Eightbank
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eightbank?ApplicationName=Eightbank
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+
+  hikari:
+    maximum-pool-size: 3
+    maximum-idle: 2
+    idle-timeout: 20000
+    poolName: Eightbank

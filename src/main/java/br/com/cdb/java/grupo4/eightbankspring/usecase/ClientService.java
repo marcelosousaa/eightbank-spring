@@ -2,6 +2,7 @@ package br.com.cdb.java.grupo4.eightbankspring.usecase;
 
 import br.com.cdb.java.grupo4.eightbankspring.dao.CardDAO;
 import br.com.cdb.java.grupo4.eightbankspring.dao.ClientDAO;
+import br.com.cdb.java.grupo4.eightbankspring.dao.impl.JdbcTemplateDAOImpl;
 import br.com.cdb.java.grupo4.eightbankspring.enuns.AccountType;
 import br.com.cdb.java.grupo4.eightbankspring.enuns.AnsiColors;
 import br.com.cdb.java.grupo4.eightbankspring.enuns.ClientCategory;
@@ -20,6 +21,7 @@ import br.com.cdb.java.grupo4.eightbankspring.model.client.Address;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import br.com.cdb.java.grupo4.eightbankspring.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -32,6 +34,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
+@Service
 public class ClientService {
     List<Account> clientAccountsList;
     Client client;
@@ -46,13 +49,10 @@ public class ClientService {
     private InsuranceService insuranceService;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private JdbcTemplateDAOImpl jdbcTemplateDAOImpl;
 
     private ClientCategory clientCategory;
-
-//    public ClientService() {
-//        // Inicializando CardService com as instâncias necessárias
-//        this.cardService = new CardService(cardDAO, clientDAO);
-//    }
 
     public void addClient(Client client) {
         //Validations
@@ -87,8 +87,15 @@ public class ClientService {
                 grossMonthlyIncome
         );
 
-        clientDAO.save(client);
+        //SALVA NO ARRAY
+        //clientDAO.save(client);
+
+        //SALVA NO BANCO
+        jdbcTemplateDAOImpl.saveClient(client);
+
+        //REGISTRA AS CONTAS
         registerClientAccounts(client, 3);
+
     }
 
 
