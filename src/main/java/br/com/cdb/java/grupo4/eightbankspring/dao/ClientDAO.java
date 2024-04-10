@@ -4,6 +4,7 @@ import br.com.cdb.java.grupo4.eightbankspring.enuns.SystemMessages;
 import br.com.cdb.java.grupo4.eightbankspring.exceptions.ClientNotFoundException;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import br.com.cdb.java.grupo4.eightbankspring.usecase.PasswordService;
+import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Service
 public class ClientDAO {
 
     List<Client> clientList;

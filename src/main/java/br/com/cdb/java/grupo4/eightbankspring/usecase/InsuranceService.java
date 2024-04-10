@@ -5,11 +5,13 @@ import br.com.cdb.java.grupo4.eightbankspring.enuns.ClientCategory;
 import br.com.cdb.java.grupo4.eightbankspring.enuns.InsuranceType;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import br.com.cdb.java.grupo4.eightbankspring.model.insurance.Insurance;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
+@Service
 public class InsuranceService {
     InsuranceDAO insuranceDAO = new InsuranceDAO();
 

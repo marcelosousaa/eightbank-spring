@@ -1,11 +1,13 @@
 package br.com.cdb.java.grupo4.eightbankspring.dao;
 
 import br.com.cdb.java.grupo4.eightbankspring.model.card.Card;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class CardDAO {
     private List<Card> cards = new ArrayList<>();
 

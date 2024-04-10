@@ -8,9 +8,11 @@ import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.CurrentAccount;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.SavingsAccount;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class AccountService {
 
     @Autowired

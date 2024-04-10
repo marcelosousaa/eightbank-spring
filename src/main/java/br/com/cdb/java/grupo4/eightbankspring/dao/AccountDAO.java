@@ -6,10 +6,12 @@ import br.com.cdb.java.grupo4.eightbankspring.exceptions.AccountNotFoundExceptio
 import br.com.cdb.java.grupo4.eightbankspring.exceptions.InsufficientFundsException;
 import br.com.cdb.java.grupo4.eightbankspring.exceptions.InvalidValueException;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class AccountDAO {
     List<Account> accountList = new ArrayList<>();
 
