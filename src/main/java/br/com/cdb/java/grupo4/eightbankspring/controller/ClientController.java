@@ -5,17 +5,14 @@ import br.com.cdb.java.grupo4.eightbankspring.model.StandardResponse;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import br.com.cdb.java.grupo4.eightbankspring.usecase.ClientService;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
-import java.beans.Beans;
 import java.util.List;
 
 @RestController
@@ -28,8 +25,6 @@ public class ClientController {
 
     @Autowired
     ClientService clientService;
-
-    ModelMapper modelMapper;
 
     @PostMapping("/add")
     public ResponseEntity<?> addClient(@RequestBody ClientDTO clientDTO){
@@ -47,7 +42,7 @@ public class ClientController {
         return ok;
     }
 
-    // Conversao de Objetos com DTO
+    // Conversao de ObjetosDTO
     private Client convertToEntity(ClientDTO clientDTO){
         Client client = new Client();
         BeanUtils.copyProperties(clientDTO, client);
