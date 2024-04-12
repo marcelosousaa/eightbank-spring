@@ -6,11 +6,11 @@ import java.time.LocalDate;
 
 public class Insurance {
     private long policyNumber;
-    private LocalDate issueDate;
-    private double policyValue;
-    private String policyConditions;
-    private InsuranceType insuranceType;
-    private String clientCPF;
+    private final LocalDate issueDate;
+    private final double policyValue;
+    private final String policyConditions;
+    private final InsuranceType insuranceType;
+    private final String clientCPF;
 
 
     public Insurance(LocalDate issueDate, double policyValue, String policyConditions, InsuranceType insuranceType, String clientCPF) {

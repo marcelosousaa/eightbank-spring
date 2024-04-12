@@ -56,6 +56,6 @@ public class ClientController {
 
     @GetMapping("/{cpf}/accounts")
     public List<Account> showClientAccounts(@PathVariable String cpf) {
-        return clientService.listClientAccounts(cpf);
+        return clientService.showClientAccounts(cpf);
     }
 }

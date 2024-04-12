@@ -1,8 +1,12 @@
 package br.com.cdb.java.grupo4.eightbankspring.dao.impl;
 
 import br.com.cdb.java.grupo4.eightbankspring.dao.IJdbcTemplateDAO;
+import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
+import br.com.cdb.java.grupo4.eightbankspring.model.account.CurrentAccount;
+import br.com.cdb.java.grupo4.eightbankspring.model.account.SavingsAccount;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Service;
@@ -10,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.List;
 
 @Service
 public class JdbcTemplateDAOImpl implements IJdbcTemplateDAO {
@@ -45,31 +50,81 @@ public class JdbcTemplateDAOImpl implements IJdbcTemplateDAO {
                 return null;
             });
 
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
-//            String sql = """
-//                    SELECT public.save_client(
-//                    '22296607055',
-//                    'Marcelo de Sousa Silva',
-//                    'sousams93@outlook.com',
-//                    '1000:c6102221b07eb25f4106e35eab644c0a:bfd31a0f36ee68ab4a1b6fe36f9cd8bc6ca70075e9f93ab987e499962e3e031eb9571aa7462c6cd3a487657f9fc6586abdfb5e29af7367527c25e95578d861cd',
-//                    '2006-03-07',
-//                    'COMMOM',
-//                    '(11) 9999-9999',
-//                    1000.0,
-//                    'Rua Java',
-//                    111,
-//                    'Bay Area',
-//                    'Los Angeles',
-//                    'SP',
-//                    '06186-120',
-//                    'Some address complement'
-//                    )""";
-//
-//            jdbcTemplate.execute(sql);
+    @Override
+    @Transactional
+    public void saveSavingsAccount(String ownerCpf, SavingsAccount savingsAccount) {
+        try {
+            String sql = "SELECT public.save_savings_account (?, ?, ?, ?)";
+
+            jdbcTemplate.execute(sql, (PreparedStatementCallback<Void>) preparedStatement -> {
+                preparedStatement.setString(1, ownerCpf);
+                preparedStatement.setBigDecimal(2, BigDecimal.valueOf(savingsAccount.getBalance()));
+                preparedStatement.setString(3, savingsAccount.getAccountType().getAccountTypeName());
+                preparedStatement.setBigDecimal(4, BigDecimal.valueOf(savingsAccount.getAnnualPercentageYield()));
+                preparedStatement.execute();
+
+                return null;
+            });
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @Override
+    public void saveCurrentAccount(String ownerCpf, CurrentAccount currentAccount) {
+        try {
+            String sql = "SELECT public.save_current_account (?, ?, ?, ?)";
+
+            jdbcTemplate.execute(sql, (PreparedStatementCallback<Void>) preparedStatement -> {
+                preparedStatement.setString(1, ownerCpf);
+                preparedStatement.setBigDecimal(2, BigDecimal.valueOf(currentAccount.getBalance()));
+                preparedStatement.setString(3, currentAccount.getAccountType().getAccountTypeName());
+                preparedStatement.setBigDecimal(4, BigDecimal.valueOf(currentAccount.getAccountFee()));
+                preparedStatement.execute();
+
+                return null;
+            });
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Client> listAllClients() {
+        List<Client> clientsList = null;
+        try {
+            String sql = "SELECT * FROM CLIENT";
+            clientsList = jdbcTemplate.query(
+                    sql,
+                    new BeanPropertyRowMapper<>(Client.class));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return clientsList;
+    }
+
+    @Override
+    public List<Account> findAccountsByCpf(String cpf) {
+        List<Account> accountsList = null;
+        try {
+            String sql = "SELECT public.show_client_accounts('" + cpf + "')";
+
+            accountsList = jdbcTemplate.query(
+                    sql,
+                    new BeanPropertyRowMapper<>(Account.class));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return accountsList;
     }
 
 }
