@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class CardDAO {
-    private List<Card> cards = new ArrayList<>();
+    private final List<Card> cards = new ArrayList<>();
 
     public void addCard(Card card) {
         cards.add(card);

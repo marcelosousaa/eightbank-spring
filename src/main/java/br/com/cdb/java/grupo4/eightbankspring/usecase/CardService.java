@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 @Service
 public class CardService {
-    private Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
 
     private ClientDAO clientDAO;
     private CardDAO cardDAO; // Assumindo inicialização correta

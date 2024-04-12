@@ -39,7 +39,7 @@ public class ClientDAO {
     public void listClients() {
         for (Client client : this.clientList) {
             if (client instanceof Client) {
-                System.out.println(((Client) client));
+                System.out.println(client);
             }
         }
     }
