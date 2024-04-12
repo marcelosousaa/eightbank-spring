@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: Eightbank
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/eightbank?ApplicationName=Eightbank
+    username: postgres
+    password: admin
+    driverClassName: org.postgresql.Driver
+  hikari:
+    maximum-pool-size: 3
+    maximum-idle: 2
+    idle-timeout: 20000
+    poolName: Eightbank

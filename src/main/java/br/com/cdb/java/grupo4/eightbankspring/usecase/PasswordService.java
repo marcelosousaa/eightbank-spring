@@ -1,5 +1,7 @@
 package br.com.cdb.java.grupo4.eightbankspring.usecase;
 
+import org.springframework.stereotype.Service;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.math.BigInteger;
@@ -7,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
+@Service
 public class PasswordService {
 
     //GERAR E RETORNA SENHA FORTE

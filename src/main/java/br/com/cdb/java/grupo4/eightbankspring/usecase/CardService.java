@@ -7,10 +7,12 @@ import br.com.cdb.java.grupo4.eightbankspring.enuns.CardType;
 import br.com.cdb.java.grupo4.eightbankspring.model.card.Card;
 import br.com.cdb.java.grupo4.eightbankspring.model.card.CardFactory;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Scanner;
 
+@Service
 public class CardService {
     private Scanner scanner = new Scanner(System.in);
 
@@ -21,6 +23,8 @@ public class CardService {
         this.cardDAO = cardDAO;
         this.clientDAO = clientDAO;
     }
+
+    public CardService(){}
 
     private boolean isValidCPF(String cpf) {
         return cpf != null && cpf.matches("\\d{11}");

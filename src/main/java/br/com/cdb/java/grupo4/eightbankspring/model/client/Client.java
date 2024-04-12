@@ -4,6 +4,7 @@ import br.com.cdb.java.grupo4.eightbankspring.enuns.ClientCategory;
 
 import java.time.LocalDate;
 
+
 public class Client {
     private long id;
     private String email;
@@ -15,6 +16,8 @@ public class Client {
     private ClientCategory clientCategory;
     private String phoneNumber;
     private double grossMonthlyIncome;
+
+    public Client(){}
 
     public Client(
             String email,

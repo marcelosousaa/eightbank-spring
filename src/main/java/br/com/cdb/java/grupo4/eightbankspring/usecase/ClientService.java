@@ -2,6 +2,7 @@ package br.com.cdb.java.grupo4.eightbankspring.usecase;
 
 import br.com.cdb.java.grupo4.eightbankspring.dao.CardDAO;
 import br.com.cdb.java.grupo4.eightbankspring.dao.ClientDAO;
+import br.com.cdb.java.grupo4.eightbankspring.dao.impl.JdbcTemplateDAOImpl;
 import br.com.cdb.java.grupo4.eightbankspring.enuns.AccountType;
 import br.com.cdb.java.grupo4.eightbankspring.enuns.AnsiColors;
 import br.com.cdb.java.grupo4.eightbankspring.enuns.ClientCategory;
@@ -19,6 +20,8 @@ import br.com.cdb.java.grupo4.eightbankspring.model.card.DebitCard;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Address;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import br.com.cdb.java.grupo4.eightbankspring.utils.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -31,20 +34,70 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
+@Service
 public class ClientService {
     List<Account> clientAccountsList;
     Client client;
-    private CardDAO cardDAO = new CardDAO(); // Criação de CardDAO
-    private ClientDAO clientDAO = new ClientDAO(); // Já existente
-    private CardService cardService = new CardService(cardDAO, clientDAO);
-    private InsuranceService insuranceService = new InsuranceService();
-    private AccountService accountService = new AccountService();
+
+    @Autowired
+    private ClientDAO clientDAO;
+    @Autowired
+    private CardDAO cardDAO;
+    @Autowired
+    private CardService cardService;
+    @Autowired
+    private InsuranceService insuranceService;
+    @Autowired
+    private AccountService accountService;
+    @Autowired
+    private JdbcTemplateDAOImpl jdbcTemplateDAOImpl;
+
     private ClientCategory clientCategory;
 
-    public ClientService() {
-        // Inicializando CardService com as instâncias necessárias
-        this.cardService = new CardService(cardDAO, clientDAO);
+    public void addClient(Client client) {
+        //Validations
+
+        String email = client.getEmail();
+
+        String passwordString;
+        try{
+            passwordString = PasswordService.generateStrongPassword(client.getPassword());
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            passwordString = client.getPassword();
+        }
+
+        String name = client.getName();
+        String cpf = client.getCpf();
+        LocalDate dateOfBirth = client.getDateOfBirth();
+        Address address = client.getAddress();
+        String phoneNumber = client.getPhoneNumber();
+        double grossMonthlyIncome = client.getGrossMonthlyIncome();
+        clientCategory = checkClientCategory(client.getGrossMonthlyIncome());
+
+        client = new Client(
+                email,
+                passwordString,
+                name,
+                cpf,
+                dateOfBirth,
+                address,
+                clientCategory,
+                phoneNumber,
+                grossMonthlyIncome
+        );
+
+        //SALVA NO ARRAY
+        //clientDAO.save(client);
+
+        //SALVA NO BANCO
+        jdbcTemplateDAOImpl.saveClient(client);
+
+        //REGISTRA AS CONTAS
+        registerClientAccounts(client, 3);
+
     }
+
 
     public boolean clientRegistration() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidValueException {
 
@@ -1826,5 +1879,20 @@ public class ClientService {
             }
             break;
         }
+    }
+
+    public List<Client> getClients() {
+        return clientDAO.listAll();
+    }
+
+    public List<Account> listClientAccounts(String cpf) {
+        List<Account> foundAccountsList = null;
+
+        try{
+            foundAccountsList = accountService.findAccountsByCPF(cpf);
+        } catch (AccountNotFoundException e){
+            System.out.println("Não foram localizadas contas para este CPF!");
+        }
+        return foundAccountsList;
     }
 }
