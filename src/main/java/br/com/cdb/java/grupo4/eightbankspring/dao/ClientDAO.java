@@ -21,15 +21,14 @@ public class ClientDAO {
         this.clientList = new ArrayList<>();
     }
 
-    public void save(Client client){
+    public void save(Client client) {
         client.setId(clientList.size() + 1);
         clientList.add(client);
     }
 
-    public List<Client> listAll(){
+    public List<Client> listAll() {
         return this.clientList;
     }
-
 
 
     public void addClient(Client client) {

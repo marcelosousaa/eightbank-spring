@@ -60,9 +60,9 @@ public class ClientService {
         String email = client.getEmail();
 
         String passwordString;
-        try{
+        try {
             passwordString = PasswordService.generateStrongPassword(client.getPassword());
-        } catch (Exception e){
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             passwordString = client.getPassword();
         }
@@ -1888,9 +1888,9 @@ public class ClientService {
     public List<Account> listClientAccounts(String cpf) {
         List<Account> foundAccountsList = null;
 
-        try{
+        try {
             foundAccountsList = accountService.findAccountsByCPF(cpf);
-        } catch (AccountNotFoundException e){
+        } catch (AccountNotFoundException e) {
             System.out.println("Não foram localizadas contas para este CPF!");
         }
         return foundAccountsList;

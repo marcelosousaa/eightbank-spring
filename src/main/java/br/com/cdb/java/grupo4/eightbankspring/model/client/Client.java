@@ -1,10 +1,15 @@
 package br.com.cdb.java.grupo4.eightbankspring.model.client;
 
 import br.com.cdb.java.grupo4.eightbankspring.enuns.ClientCategory;
+import lombok.*;
 
 import java.time.LocalDate;
 
-
+@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Client {
     private long id;
     private String email;
@@ -16,8 +21,6 @@ public class Client {
     private ClientCategory clientCategory;
     private String phoneNumber;
     private double grossMonthlyIncome;
-
-    public Client(){}
 
     public Client(
             String email,

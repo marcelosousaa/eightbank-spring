@@ -1,7 +1,13 @@
 package br.com.cdb.java.grupo4.eightbankspring.model.account;
 
 import br.com.cdb.java.grupo4.eightbankspring.enuns.AccountType;
+import lombok.*;
 
+@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class Account {
     private long accountNumber;
     private double balance;

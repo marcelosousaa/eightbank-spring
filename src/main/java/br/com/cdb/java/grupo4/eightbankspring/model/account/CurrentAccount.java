@@ -2,7 +2,15 @@ package br.com.cdb.java.grupo4.eightbankspring.model.account;
 
 import br.com.cdb.java.grupo4.eightbankspring.enuns.AccountType;
 import br.com.cdb.java.grupo4.eightbankspring.model.interfaces.ITaxable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CurrentAccount extends Account implements ITaxable {
     private double accountFee;
 

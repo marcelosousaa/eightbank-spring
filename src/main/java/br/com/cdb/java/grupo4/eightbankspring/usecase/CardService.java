@@ -24,7 +24,8 @@ public class CardService {
         this.clientDAO = clientDAO;
     }
 
-    public CardService(){}
+    public CardService() {
+    }
 
     private boolean isValidCPF(String cpf) {
         return cpf != null && cpf.matches("\\d{11}");

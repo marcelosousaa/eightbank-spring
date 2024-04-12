@@ -2,7 +2,15 @@ package br.com.cdb.java.grupo4.eightbankspring.model.account;
 
 import br.com.cdb.java.grupo4.eightbankspring.enuns.AccountType;
 import br.com.cdb.java.grupo4.eightbankspring.model.interfaces.IYieldable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class SavingsAccount extends Account implements IYieldable {
     private double annualPercentageYield;
 

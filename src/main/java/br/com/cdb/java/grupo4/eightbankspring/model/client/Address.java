@@ -1,12 +1,10 @@
 package br.com.cdb.java.grupo4.eightbankspring.model.client;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Getter
 @Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Address {
@@ -35,34 +33,6 @@ public class Address {
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
-        this.addressComplement = addressComplement;
-    }
-
-    public void setStreetName(String streetName) {
-        this.streetName = streetName;
-    }
-
-    public void setNumber(long number) {
-        this.number = number;
-    }
-
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
-
-    public void setAddressComplement(String addressComplement) {
         this.addressComplement = addressComplement;
     }
 

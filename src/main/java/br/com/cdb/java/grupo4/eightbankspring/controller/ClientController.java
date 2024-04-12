@@ -27,7 +27,7 @@ public class ClientController {
     ClientService clientService;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addClient(@RequestBody ClientDTO clientDTO){
+    public ResponseEntity<?> addClient(@RequestBody ClientDTO clientDTO) {
         long startTime = System.currentTimeMillis();
 
         Client convertedClient = convertToEntity(clientDTO);
@@ -43,17 +43,19 @@ public class ClientController {
     }
 
     // Conversao de ObjetosDTO
-    private Client convertToEntity(ClientDTO clientDTO){
+    private Client convertToEntity(ClientDTO clientDTO) {
         Client client = new Client();
         BeanUtils.copyProperties(clientDTO, client);
         return client;
     }
 
     @GetMapping("/all")
-    public List<Client> getAllClients(){
+    public List<Client> getAllClients() {
         return clientService.getClients();
     }
 
     @GetMapping("/{cpf}/accounts")
-    public List<Account> showClientAccounts(@PathVariable String cpf){ return clientService.listClientAccounts(cpf);}
+    public List<Account> showClientAccounts(@PathVariable String cpf) {
+        return clientService.listClientAccounts(cpf);
+    }
 }

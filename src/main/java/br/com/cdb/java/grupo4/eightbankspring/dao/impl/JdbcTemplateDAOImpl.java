@@ -3,9 +3,9 @@ package br.com.cdb.java.grupo4.eightbankspring.dao.impl;
 import br.com.cdb.java.grupo4.eightbankspring.dao.IJdbcTemplateDAO;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -19,9 +19,9 @@ public class JdbcTemplateDAOImpl implements IJdbcTemplateDAO {
 
     @Override
     @Transactional
-    public void saveClient(Client client){
+    public void saveClient(Client client) {
 
-        try{
+        try {
             String sql = "SELECT public.save_client (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             jdbcTemplate.execute(sql, (PreparedStatementCallback<Void>) preparedStatement -> {
@@ -67,7 +67,7 @@ public class JdbcTemplateDAOImpl implements IJdbcTemplateDAO {
 //
 //            jdbcTemplate.execute(sql);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
