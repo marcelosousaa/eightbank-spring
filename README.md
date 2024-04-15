@@ -1,6 +1,6 @@
 # eightbank-spring
 
-Código de Base - Java Back-End - Projeto Final
+## Código de Base - Java Back-End - Projeto Final
 
 1 - Criar a base de dados: eightbank
 
@@ -12,7 +12,7 @@ Código de Base - Java Back-End - Projeto Final
 
 5 - Importar a collection no postman
 
-Tabelas:
+## Tabelas:
 
 CREATE TABLE ADDRESS (
 	ID SERIAL PRIMARY KEY,
@@ -53,7 +53,7 @@ CREATE TABLE SAVINGS_ACCOUNT (
 	CLIENT_ID SERIAL REFERENCES CLIENT(id)
 );
 
-Functions:
+## Functions:
 
 --Eightbank SQL Functions
 
