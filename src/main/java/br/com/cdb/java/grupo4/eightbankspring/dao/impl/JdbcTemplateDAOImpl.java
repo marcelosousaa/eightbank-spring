@@ -3,6 +3,7 @@ package br.com.cdb.java.grupo4.eightbankspring.dao.impl;
 import br.com.cdb.java.grupo4.eightbankspring.dao.IJdbcTemplateDAO;
 import br.com.cdb.java.grupo4.eightbankspring.dtos.CurrentAccountDTO;
 import br.com.cdb.java.grupo4.eightbankspring.dtos.SavingsAccountDTO;
+import br.com.cdb.java.grupo4.eightbankspring.exceptions.InvalidValueException;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.CurrentAccount;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.SavingsAccount;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class JdbcTemplateDAOImpl implements IJdbcTemplateDAO {
@@ -132,6 +134,34 @@ public class JdbcTemplateDAOImpl implements IJdbcTemplateDAO {
         }
 
         return clientAccountsList;
+    }
+
+    @Override
+    public void depositValue(long accountNumber, double value, String accountType) throws InvalidValueException {
+
+        if(Objects.equals(accountType, "CP")){
+            try{
+                String sql = "SELECT public.update_savings_account_balance(" + accountNumber + "," + value + ");";
+
+                jdbcTemplate.execute(sql);
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
+        } else if(Objects.equals(accountType, "CC")){
+            try{
+                String sql = "SELECT public.update_current_account_balance(" + accountNumber + "," + value + ");";
+
+                jdbcTemplate.execute(sql);
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
+        } else {
+            throw new InvalidValueException("Tipo de conta inválido!");
+        }
+
+
     }
 
 }

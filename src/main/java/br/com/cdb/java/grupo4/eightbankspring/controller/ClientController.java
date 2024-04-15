@@ -52,11 +52,43 @@ public class ClientController {
 
     @GetMapping("/savings-accounts")
     public List<SavingsAccountDTO> showClientSavingsAccount(@RequestParam String cpf){
-        return clientService.showClientSavingsAccounts(cpf);
+        List<SavingsAccountDTO> clientSavingsAccount;
+        long startTime = System.currentTimeMillis();
+
+        clientSavingsAccount = clientService.showClientSavingsAccounts(cpf);
+
+        long endTime = System.currentTimeMillis();
+        long timeElapsed = endTime - startTime;
+        LOGGER.info("Tempo decorrido: {} milissegundos.", timeElapsed);
+
+        return clientSavingsAccount;
     }
 
     @GetMapping("/current-accounts")
     public List<CurrentAccountDTO> showClientCurrentAccount(@RequestParam String cpf){
-        return clientService.showClientCurrentAccounts(cpf);
+        List<CurrentAccountDTO> clientCurrentAccounts;
+        long startTime = System.currentTimeMillis();
+
+        clientCurrentAccounts = clientService.showClientCurrentAccounts(cpf);
+        long endTime = System.currentTimeMillis();
+        long timeElapsed = endTime - startTime;
+        LOGGER.info("Tempo decorrido: {} milissegundos.", timeElapsed);
+
+        return clientCurrentAccounts;
+    }
+
+    @PatchMapping("/deposit")
+    public ResponseEntity<?> depositOnAccount(@RequestParam long accountNumber, double value, String accountType){
+        long startTime = System.currentTimeMillis();
+        clientService.depositOnClientAccount(accountNumber, value, accountType);
+
+        ResponseEntity<StandardResponse> ok =
+                ResponseEntity.ok(StandardResponse.builder().message("Valor depositado com sucesso!").build());
+
+        long endTime = System.currentTimeMillis();
+        long timeElapsed = endTime - startTime;
+        LOGGER.info("Tempo decorrido: {} milissegundos.", timeElapsed);
+
+        return ok;
     }
 }

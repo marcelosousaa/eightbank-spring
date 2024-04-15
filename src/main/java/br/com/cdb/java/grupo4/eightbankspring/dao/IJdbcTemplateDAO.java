@@ -20,4 +20,6 @@ public interface IJdbcTemplateDAO {
 
     List<SavingsAccountDTO> findSavingsAccountByCpf(String cpf);
     List<CurrentAccountDTO> findCurrentAccountByCpf(String cpf);
+
+    void depositValue(long accountNumber, double value, String accountType);
 }

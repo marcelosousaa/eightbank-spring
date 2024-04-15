@@ -254,4 +254,8 @@ public class ClientService {
     public List<CurrentAccountDTO> showClientCurrentAccounts(String cpf) {
         return jdbcTemplateDAOImpl.findCurrentAccountByCpf(cpf);
     }
+
+    public void depositOnClientAccount(long accountNumber, double value, String accountType) {
+        jdbcTemplateDAOImpl.depositValue(accountNumber, value, accountType);
+    }
 }
