@@ -120,9 +120,9 @@ public class ClientService {
 
             while ((dateOfBirth = reader.readLine()) != null) {
                 String[] dateOfBirthFields = dateOfBirth.split("-");
-                int dayOfMonth = Integer.parseInt(dateOfBirthFields[0]);
+                int year = Integer.parseInt(dateOfBirthFields[0]);
                 int month = Integer.parseInt(dateOfBirthFields[1]);
-                int year = Integer.parseInt(dateOfBirthFields[2]);
+                int dayOfMonth = Integer.parseInt(dateOfBirthFields[2]);
                 convertedDob = LocalDate.of(year, month, dayOfMonth);
             }
 
