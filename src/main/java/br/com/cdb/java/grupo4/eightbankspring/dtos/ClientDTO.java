@@ -12,9 +12,8 @@ public class ClientDTO {
     private String password;
     private String name;
     private String cpf;
-    private LocalDate dateOfBirth;
+    private String dateOfBirth;
     private Address address;
     private String phoneNumber;
     private double grossMonthlyIncome;
-
 }

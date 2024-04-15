@@ -3,6 +3,8 @@ package br.com.cdb.java.grupo4.eightbankspring.usecase;
 import br.com.cdb.java.grupo4.eightbankspring.dao.CardDAO;
 import br.com.cdb.java.grupo4.eightbankspring.dao.ClientDAO;
 import br.com.cdb.java.grupo4.eightbankspring.dao.impl.JdbcTemplateDAOImpl;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.AddressDTO;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.ClientDTO;
 import br.com.cdb.java.grupo4.eightbankspring.enuns.ClientCategory;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.CurrentAccount;
@@ -10,9 +12,14 @@ import br.com.cdb.java.grupo4.eightbankspring.model.account.SavingsAccount;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Address;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import br.com.cdb.java.grupo4.eightbankspring.utils.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,62 +41,65 @@ public class ClientService {
     @Autowired
     private JdbcTemplateDAOImpl jdbcTemplateDAOImpl;
 
-    public void addClient(Client client) {
+    public void addClient(ClientDTO clientDTO) {
+
         //Validations
         //Email validator
-        if (!EmailValidator.validateEmail(client.getEmail())) {
+        if (!EmailValidator.validateEmail(clientDTO.getEmail())) {
             throw new IllegalArgumentException("Email Inválido"); //Validador OK
         }
 
         //CPF validator
-        if (!CpfValidator.validateCPF(client.getCpf())) {
+        if (!CpfValidator.validateCPF(clientDTO.getCpf())) {
             throw new IllegalArgumentException("CPF Inválido"); //ValIdador OK
         }
 
         //Name validator
-       if(!NameValidator.validateName(client.getName())){
+       if(!NameValidator.validateName(clientDTO.getName())){
             throw new IllegalArgumentException("Nome Inválido");
        }
 
        //Date of Birth validator
-       if (!DateOfBirthValidator.validateDateOfBirth(client.getDateOfBirth().toString())) {
+       if (!DateOfBirthValidator.validateDateOfBirth(clientDTO.getDateOfBirth())) {
             throw new IllegalArgumentException("Data de nascimento inválida.");
        }
 
-       if (!DateOfBirthValidator.isOfLegalAge(client.getDateOfBirth().toString())) {
+       if (!DateOfBirthValidator.isOfLegalAge(clientDTO.getDateOfBirth())) {
             throw new IllegalArgumentException("Cadastro permitido somente para maiores de 18 anos.");
        }
 
+       LocalDate convertedDateOfBirth = convertDateOfBirth(clientDTO.getDateOfBirth());
+
        //Phone Number validator
-       if (!PhoneNumberValidator.validatePhoneNumber(client.getPhoneNumber())) {
+       if (!PhoneNumberValidator.validatePhoneNumber(clientDTO.getPhoneNumber())) {
             throw new IllegalArgumentException("Número de celular Inválido");
        }
 
        //Zip Code validator
-       if (!ZipCodeValidator.validateZipCode(client.getAddress().getZipCode())){
+       if (!ZipCodeValidator.validateZipCode(clientDTO.getAddress().getZipCode())){
             throw new IllegalArgumentException("CEP Inválido");
        }
 
         String passwordString = " ";
         try {
-            passwordString = PasswordService.generateStrongPassword(client.getPassword());
+            passwordString = PasswordService.generateStrongPassword(clientDTO.getPassword());
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
 
-        Address address = client.getAddress();
-        double grossMonthlyIncome = client.getGrossMonthlyIncome();
-        ClientCategory clientCategory = checkClientCategory(client.getGrossMonthlyIncome());
+        Address address = clientDTO.getAddress();
+        double grossMonthlyIncome = clientDTO.getGrossMonthlyIncome();
+        ClientCategory clientCategory = checkClientCategory(clientDTO.getGrossMonthlyIncome());
 
-        client = new Client(
-                client.getEmail(),
+        Client client = new Client(
+                clientDTO.getEmail(),
                 passwordString,
-                client.getName(),
-                client.getCpf(),
-                client.getDateOfBirth(),
+                clientDTO.getName(),
+                clientDTO.getCpf(),
+                convertedDateOfBirth,
                 address,
                 clientCategory,
-                client.getPhoneNumber(),
+                clientDTO.getPhoneNumber(),
                 grossMonthlyIncome
         );
 
@@ -98,6 +108,29 @@ public class ClientService {
 
         //REGISTRA AS CONTAS e SALVA NO BANCO
         registerClientAccounts(client);
+
+    }
+
+    private LocalDate convertDateOfBirth(String dateOfBirth) {
+        LocalDate convertedDob = null;
+        BufferedReader reader;
+
+        try{
+            reader = new BufferedReader(new StringReader(dateOfBirth));
+
+            while ((dateOfBirth = reader.readLine()) != null) {
+                String[] dateOfBirthFields = dateOfBirth.split("-");
+                int dayOfMonth = Integer.parseInt(dateOfBirthFields[0]);
+                int month = Integer.parseInt(dateOfBirthFields[1]);
+                int year = Integer.parseInt(dateOfBirthFields[2]);
+                convertedDob = LocalDate.of(year, month, dayOfMonth);
+            }
+
+        } catch (IOException e){
+            throw new RuntimeException();
+        }
+
+        return convertedDob;
 
     }
 

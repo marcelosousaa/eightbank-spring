@@ -29,18 +29,18 @@ public class ClientController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addClient(@RequestBody ClientDTO clientDTO) {
+
         try {
             long startTime = System.currentTimeMillis();
 
-            Client convertedClient = convertToEntity(clientDTO);
-            clientService.addClient(convertedClient);
+            clientService.addClient(clientDTO);
 
             ResponseEntity<StandardResponse> ok =
                     ResponseEntity.ok(StandardResponse.builder().message("Cliente cadastrado com sucesso!").build());
 
             long endTime = System.currentTimeMillis();
             long timeElapsed = endTime - startTime;
-            LOGGER.info("Tempo decorrido: " + timeElapsed + " milissegundos.");
+            LOGGER.info("Tempo decorrido: {} milissegundos.", timeElapsed);
             return ok;
         } catch (IllegalArgumentException ex) {
             LOGGER.error("Erro de validação: {}", ex.getMessage());
@@ -49,18 +49,6 @@ public class ClientController {
             LOGGER.error("Erro ao cadastrar cliente: {}", ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StandardResponse.builder().message("Erro ao cadastrar cliente."));
         }
-    }
-
-    // Conversao de ObjetosDTO
-    private Client convertToEntity(ClientDTO clientDTO) {
-        Client client = new Client();
-        BeanUtils.copyProperties(clientDTO, client);
-        return client;
-    }
-
-    @GetMapping("/all")
-    public List<Client> getAllClients() {
-        return clientService.getClients();
     }
 
     @GetMapping("/{cpf}/accounts")
