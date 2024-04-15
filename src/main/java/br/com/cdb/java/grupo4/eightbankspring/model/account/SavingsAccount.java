@@ -2,11 +2,9 @@ package br.com.cdb.java.grupo4.eightbankspring.model.account;
 
 import br.com.cdb.java.grupo4.eightbankspring.enuns.AccountType;
 import br.com.cdb.java.grupo4.eightbankspring.model.interfaces.IYieldable;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Setter
 @Getter
 @Data
 @AllArgsConstructor
@@ -16,14 +14,6 @@ public class SavingsAccount extends Account implements IYieldable {
 
     public SavingsAccount(double balance, String ownerCpf, double annualPercentageYield) {
         super(balance, AccountType.SAVINGS_ACCOUNT, ownerCpf);
-        this.annualPercentageYield = annualPercentageYield;
-    }
-
-    public double getAnnualPercentageYield() {
-        return annualPercentageYield;
-    }
-
-    public void setAnnualPercentageYield(double annualPercentageYield) {
         this.annualPercentageYield = annualPercentageYield;
     }
 

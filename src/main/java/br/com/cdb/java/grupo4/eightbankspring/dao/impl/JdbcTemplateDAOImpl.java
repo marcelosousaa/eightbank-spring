@@ -1,6 +1,8 @@
 package br.com.cdb.java.grupo4.eightbankspring.dao.impl;
 
 import br.com.cdb.java.grupo4.eightbankspring.dao.IJdbcTemplateDAO;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.CurrentAccountDTO;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.SavingsAccountDTO;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.CurrentAccount;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.SavingsAccount;
@@ -97,34 +99,39 @@ public class JdbcTemplateDAOImpl implements IJdbcTemplateDAO {
     }
 
     @Override
-    public List<Client> listAllClients() {
-        List<Client> clientsList = null;
-        try {
-            String sql = "SELECT * FROM CLIENT";
-            clientsList = jdbcTemplate.query(
+    public List<SavingsAccountDTO> findSavingsAccountByCpf(String cpf) {
+        List<SavingsAccountDTO> clientAccountsList = null;
+
+        try{
+            String sql = "SELECT * FROM SAVINGS_ACCOUNT WHERE OWNER_CPF = ('"+ cpf +"')";
+
+            clientAccountsList = jdbcTemplate.query(
                     sql,
-                    new BeanPropertyRowMapper<>(Client.class));
-        } catch (Exception e) {
+                    new BeanPropertyRowMapper<>(SavingsAccountDTO.class));
+
+        } catch (Exception e){
             System.out.println(e.getMessage());
         }
 
-        return clientsList;
+        return clientAccountsList;
     }
 
     @Override
-    public List<Account> findAccountsByCpf(String cpf) {
-        List<Account> accountsList = null;
-        try {
-            String sql = "SELECT public.show_client_accounts('" + cpf + "')";
+    public List<CurrentAccountDTO> findCurrentAccountByCpf(String cpf) {
+        List<CurrentAccountDTO> clientAccountsList = null;
 
-            accountsList = jdbcTemplate.query(
+        try{
+            String sql = "SELECT * FROM CURRENT_ACCOUNT WHERE OWNER_CPF = ('"+ cpf +"')";
+
+            clientAccountsList = jdbcTemplate.query(
                     sql,
-                    new BeanPropertyRowMapper<>(Account.class));
-        } catch (Exception e) {
+                    new BeanPropertyRowMapper<>(CurrentAccountDTO.class));
+
+        } catch (Exception e){
             System.out.println(e.getMessage());
         }
 
-        return accountsList;
+        return clientAccountsList;
     }
 
 }

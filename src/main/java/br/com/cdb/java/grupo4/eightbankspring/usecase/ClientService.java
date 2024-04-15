@@ -5,6 +5,8 @@ import br.com.cdb.java.grupo4.eightbankspring.dao.ClientDAO;
 import br.com.cdb.java.grupo4.eightbankspring.dao.impl.JdbcTemplateDAOImpl;
 import br.com.cdb.java.grupo4.eightbankspring.dtos.AddressDTO;
 import br.com.cdb.java.grupo4.eightbankspring.dtos.ClientDTO;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.CurrentAccountDTO;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.SavingsAccountDTO;
 import br.com.cdb.java.grupo4.eightbankspring.enuns.ClientCategory;
 import br.com.cdb.java.grupo4.eightbankspring.exceptions.InvalidValueException;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
@@ -189,10 +191,6 @@ public class ClientService {
         }
     }
 
-    public List<Client> getClients() {
-        return jdbcTemplateDAOImpl.listAllClients();
-    }
-
 
     private List<Account> clientAccountsRegistration(Client client) {
         Account account;
@@ -249,7 +247,11 @@ public class ClientService {
         return clientCategory;
     }
 
-    public List<Account> showClientAccounts(String cpf) {
-        return jdbcTemplateDAOImpl.findAccountsByCpf(cpf);
+    public List<SavingsAccountDTO> showClientSavingsAccounts(String cpf) {
+        return jdbcTemplateDAOImpl.findSavingsAccountByCpf(cpf);
+    }
+
+    public List<CurrentAccountDTO> showClientCurrentAccounts(String cpf) {
+        return jdbcTemplateDAOImpl.findCurrentAccountByCpf(cpf);
     }
 }

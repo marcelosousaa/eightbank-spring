@@ -1,9 +1,9 @@
 package br.com.cdb.java.grupo4.eightbankspring.controller;
 
 import br.com.cdb.java.grupo4.eightbankspring.dtos.ClientDTO;
-import br.com.cdb.java.grupo4.eightbankspring.exceptions.InvalidValueException;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.CurrentAccountDTO;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.SavingsAccountDTO;
 import br.com.cdb.java.grupo4.eightbankspring.model.StandardResponse;
-import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
 import br.com.cdb.java.grupo4.eightbankspring.usecase.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.InputMismatchException;
 import java.util.List;
 
 @RestController
@@ -51,8 +50,13 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/{cpf}/accounts")
-    public List<Account> showClientAccounts(@PathVariable String cpf) {
-        return clientService.showClientAccounts(cpf);
+    @GetMapping("/savings-accounts")
+    public List<SavingsAccountDTO> showClientSavingsAccount(@RequestParam String cpf){
+        return clientService.showClientSavingsAccounts(cpf);
+    }
+
+    @GetMapping("/current-accounts")
+    public List<CurrentAccountDTO> showClientCurrentAccount(@RequestParam String cpf){
+        return clientService.showClientCurrentAccounts(cpf);
     }
 }
