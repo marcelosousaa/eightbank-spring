@@ -6,15 +6,14 @@ import br.com.cdb.java.grupo4.eightbankspring.dao.impl.JdbcTemplateDAOImpl;
 import br.com.cdb.java.grupo4.eightbankspring.dtos.AddressDTO;
 import br.com.cdb.java.grupo4.eightbankspring.dtos.ClientDTO;
 import br.com.cdb.java.grupo4.eightbankspring.enuns.ClientCategory;
+import br.com.cdb.java.grupo4.eightbankspring.exceptions.InvalidValueException;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.CurrentAccount;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.SavingsAccount;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Address;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import br.com.cdb.java.grupo4.eightbankspring.utils.*;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -23,7 +22,6 @@ import java.io.StringReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 @Service
 public class ClientService {
@@ -41,12 +39,23 @@ public class ClientService {
     @Autowired
     private JdbcTemplateDAOImpl jdbcTemplateDAOImpl;
 
-    public void addClient(ClientDTO clientDTO) {
+    public void addClient(ClientDTO clientDTO) throws InvalidValueException {
 
-        //Validations
         //Email validator
         if (!EmailValidator.validateEmail(clientDTO.getEmail())) {
             throw new IllegalArgumentException("Email Inválido"); //Validador OK
+        }
+
+        String passwordString = " ";
+        try {
+            passwordString = PasswordService.generateStrongPassword(clientDTO.getPassword());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        //Name validator
+        if (!NameValidator.validateName(clientDTO.getName())) {
+            throw new IllegalArgumentException("Nome Inválido");
         }
 
         //CPF validator
@@ -54,12 +63,7 @@ public class ClientService {
             throw new IllegalArgumentException("CPF Inválido"); //ValIdador OK
         }
 
-        //Name validator
-       if(!NameValidator.validateName(clientDTO.getName())){
-            throw new IllegalArgumentException("Nome Inválido");
-       }
-
-       //Date of Birth validator
+        //Date of Birth validator
        if (!DateOfBirthValidator.validateDateOfBirth(clientDTO.getDateOfBirth())) {
             throw new IllegalArgumentException("Data de nascimento inválida.");
        }
@@ -70,45 +74,82 @@ public class ClientService {
 
        LocalDate convertedDateOfBirth = convertDateOfBirth(clientDTO.getDateOfBirth());
 
-       //Phone Number validator
+        Address address = validateAddressDTO(clientDTO.getAddress());
+
+        //Phone Number validator
        if (!PhoneNumberValidator.validatePhoneNumber(clientDTO.getPhoneNumber())) {
             throw new IllegalArgumentException("Número de celular Inválido");
        }
 
        //Zip Code validator
-       if (!ZipCodeValidator.validateZipCode(clientDTO.getAddress().getZipCode())){
+        if (!ZipCodeValidator.validateZipCode(clientDTO.getAddress().getZipCode())) {
             throw new IllegalArgumentException("CEP Inválido");
        }
 
-        String passwordString = " ";
         try {
-            passwordString = PasswordService.generateStrongPassword(clientDTO.getPassword());
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+            double grossMonthlyIncome = Double.parseDouble(clientDTO.getGrossMonthlyIncome());
+
+            if (grossMonthlyIncome < 0) {
+                throw new InvalidValueException("A renda informada é inválida!");
+            }
+
+            ClientCategory clientCategory = checkClientCategory(grossMonthlyIncome);
+
+            Client client = new Client(
+                    clientDTO.getEmail(),
+                    passwordString,
+                    clientDTO.getName(),
+                    clientDTO.getCpf(),
+                    convertedDateOfBirth,
+                    address,
+                    clientCategory,
+                    clientDTO.getPhoneNumber(),
+                    grossMonthlyIncome
+            );
+
+            //SALVA NO BANCO
+            jdbcTemplateDAOImpl.saveClient(client);
+
+            //REGISTRA AS CONTAS e SALVA NO BANCO
+            registerClientAccounts(client);
+
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Renda está no formato inválido.");
+        }
+    }
+
+    private Address validateAddressDTO(AddressDTO addressDTO) throws RuntimeException {
+        long addressNumber;
+        String state;
+        String zipCode;
+
+        try {
+            addressNumber = Long.parseLong(addressDTO.getNumber());
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Número do endereço está em um formato inválido! ");
         }
 
-        Address address = clientDTO.getAddress();
-        double grossMonthlyIncome = clientDTO.getGrossMonthlyIncome();
-        ClientCategory clientCategory = checkClientCategory(clientDTO.getGrossMonthlyIncome());
+        if (!StateValidator.validateStateFormat(addressDTO.getState())) {
+            throw new InvalidValueException("Estado inválido! Por favor, informar a sigla.");
+        } else {
+            state = addressDTO.getState();
+        }
 
-        Client client = new Client(
-                clientDTO.getEmail(),
-                passwordString,
-                clientDTO.getName(),
-                clientDTO.getCpf(),
-                convertedDateOfBirth,
-                address,
-                clientCategory,
-                clientDTO.getPhoneNumber(),
-                grossMonthlyIncome
+        if (!ZipCodeValidator.validateZipCode(addressDTO.getZipCode())) {
+            throw new InvalidValueException("CEP inválido!");
+        } else {
+            zipCode = addressDTO.getZipCode();
+        }
+
+        return new Address(
+                addressDTO.getStreetName(),
+                addressNumber,
+                addressDTO.getDistrict(),
+                addressDTO.getCity(),
+                state,
+                zipCode,
+                addressDTO.getAddressComplement()
         );
-
-        //SALVA NO BANCO
-        jdbcTemplateDAOImpl.saveClient(client);
-
-        //REGISTRA AS CONTAS e SALVA NO BANCO
-        registerClientAccounts(client);
-
     }
 
     private LocalDate convertDateOfBirth(String dateOfBirth) {

@@ -1,10 +1,6 @@
 package br.com.cdb.java.grupo4.eightbankspring.dtos;
 
-import br.com.cdb.java.grupo4.eightbankspring.model.client.Address;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Getter
 public class ClientDTO {
@@ -13,7 +9,9 @@ public class ClientDTO {
     private String name;
     private String cpf;
     private String dateOfBirth;
-    private Address address;
+    private AddressDTO address;
     private String phoneNumber;
-    private double grossMonthlyIncome;
+    private String grossMonthlyIncome;
+
+
 }

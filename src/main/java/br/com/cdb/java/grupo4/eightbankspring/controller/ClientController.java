@@ -1,19 +1,19 @@
 package br.com.cdb.java.grupo4.eightbankspring.controller;
 
 import br.com.cdb.java.grupo4.eightbankspring.dtos.ClientDTO;
+import br.com.cdb.java.grupo4.eightbankspring.exceptions.InvalidValueException;
 import br.com.cdb.java.grupo4.eightbankspring.model.StandardResponse;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
-import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
 import br.com.cdb.java.grupo4.eightbankspring.usecase.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.InputMismatchException;
 import java.util.List;
 
 @RestController
@@ -42,7 +42,7 @@ public class ClientController {
             long timeElapsed = endTime - startTime;
             LOGGER.info("Tempo decorrido: {} milissegundos.", timeElapsed);
             return ok;
-        } catch (IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Erro de validação: {}", ex.getMessage());
             return ResponseEntity.badRequest().body(StandardResponse.builder().message(ex.getMessage()).build());
         } catch (Exception ex) {
