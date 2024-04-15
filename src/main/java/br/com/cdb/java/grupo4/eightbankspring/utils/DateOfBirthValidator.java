@@ -1,16 +1,21 @@
 package br.com.cdb.java.grupo4.eightbankspring.utils;
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+@Component
 public class DateOfBirthValidator {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // Verifica se a data está no formato correto e se o usuário tem 18 anos ou mais
-    public static boolean validateDateOfBirth(String dob) {
+
+    public boolean validateDateOfBirth(String dob) {
         try {
+            // Tenta parsear a data; se for bem-sucedido, retorna verdadeiro
             LocalDate.parse(dob, DATE_FORMATTER);
             return true;
         } catch (DateTimeParseException e) {
@@ -18,7 +23,7 @@ public class DateOfBirthValidator {
         }
     }
 
-    public static boolean isOfLegalAge(String dob) {
+    public boolean isOfLegalAge(String dob) {
         try {
             LocalDate birthDate = LocalDate.parse(dob, DATE_FORMATTER);
             LocalDate currentDate = LocalDate.now();

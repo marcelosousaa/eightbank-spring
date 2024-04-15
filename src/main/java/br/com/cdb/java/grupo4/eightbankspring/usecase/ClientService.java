@@ -9,7 +9,7 @@ import br.com.cdb.java.grupo4.eightbankspring.model.account.CurrentAccount;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.SavingsAccount;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Address;
 import br.com.cdb.java.grupo4.eightbankspring.model.client.Client;
-import br.com.cdb.java.grupo4.eightbankspring.utils.DateOfBirthValidator;
+import br.com.cdb.java.grupo4.eightbankspring.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,11 +33,66 @@ public class ClientService {
     private AccountService accountService;
     @Autowired
     private JdbcTemplateDAOImpl jdbcTemplateDAOImpl;
+    @Autowired
+    private final EmailValidator emailValidator;
+    @Autowired
+    private final CPFValidator cpfValidator;
+    @Autowired
+    private final NameValidator nameValidator;
+    @Autowired
+    private final DateOfBirthValidator dateOfBirthValidator;
+    @Autowired
+    private final PhoneNumberValidator phoneNumberValidator;
+    @Autowired
+    private final ZipCodeValidator zipCodeValidator;
+
+    @Autowired
+    public ClientService(EmailValidator emailValidator, CPFValidator cpfValidator, NameValidator nameValidator,
+                         DateOfBirthValidator dateOfBirthValidator, PhoneNumberValidator phoneNumberValidator,
+                         ZipCodeValidator zipCodeValidator){
+        this.emailValidator = emailValidator;
+        this.cpfValidator = cpfValidator;
+        this.nameValidator = nameValidator;
+        this.dateOfBirthValidator = dateOfBirthValidator;
+        this.phoneNumberValidator = phoneNumberValidator;
+        this.zipCodeValidator = zipCodeValidator;
+    }
 
     public void addClient(Client client) {
         //Validations
+        //Email validator
+        if (!emailValidator.validateEmail(client.getEmail())) {
+            throw new IllegalArgumentException("Email Inválido"); //Validador OK
+        }
 
-        String email = client.getEmail();
+        //CPF validator
+        if (!cpfValidator.validateCPF(client.getCpf())) {
+            throw new IllegalArgumentException("CPF Inválido"); //ValIdador OK
+        }
+
+        //Name validator
+       if(!nameValidator.validateName(client.getName())){
+            throw new IllegalArgumentException("Nome Inválido");
+       }
+
+       //Date of Birth validator
+       if (!dateOfBirthValidator.validateDateOfBirth(client.getDateOfBirth().toString())) {
+            throw new IllegalArgumentException("Data de nascimento inválida.");
+       }
+
+       if (!dateOfBirthValidator.isOfLegalAge(client.getDateOfBirth().toString())) {
+            throw new IllegalArgumentException("Cadastro permitido somente para maiores de 18 anos.");
+       }
+
+       //Phone Number validator
+       if (!phoneNumberValidator.validatePhoneNumber(client.getPhoneNumber())) {
+            throw new IllegalArgumentException("Número de celular Inválido");
+       }
+
+       //Zip Code validator
+       if (!zipCodeValidator.validateZipCode(client.getAddress().getZipCode())){
+            throw new IllegalArgumentException("CEP Inválido");
+       }
 
         String passwordString = " ";
         try {
@@ -46,23 +101,19 @@ public class ClientService {
             System.err.println(e.getMessage());
         }
 
-        String name = client.getName();
-        String cpf = client.getCpf();
-        LocalDate dateOfBirth = client.getDateOfBirth();
         Address address = client.getAddress();
-        String phoneNumber = client.getPhoneNumber();
         double grossMonthlyIncome = client.getGrossMonthlyIncome();
         ClientCategory clientCategory = checkClientCategory(client.getGrossMonthlyIncome());
 
         client = new Client(
-                email,
+                client.getEmail(),
                 passwordString,
-                name,
-                cpf,
-                dateOfBirth,
+                client.getName(),
+                client.getCpf(),
+                client.getDateOfBirth(),
                 address,
                 clientCategory,
-                phoneNumber,
+                client.getPhoneNumber(),
                 grossMonthlyIncome
         );
 
@@ -86,54 +137,6 @@ public class ClientService {
                 jdbcTemplateDAOImpl.saveCurrentAccount(client.getCpf(), (CurrentAccount) account);
             }
         }
-    }
-
-
-    private LocalDate inputDateOfBirth() {
-        LocalDate dateOfBirth;
-        String dob;
-
-        while (true) {
-            System.out.println("Digite sua data de nascimento, no formato(dd/mm/aaaa):");
-            dob = new Scanner(System.in).nextLine();
-            if (!DateOfBirthValidator.validateDateOfBirth(dob)) {
-                System.out.println("Formato inválido!");
-            } else {
-                String[] fields = dob.split("/");
-                int day = Integer.parseInt(fields[0]);
-                int month = Integer.parseInt(fields[1]);
-                int year = Integer.parseInt(fields[2]);
-
-                if (year > LocalDate.now().getYear()) {
-                    System.out.println("Ano inválido!");
-                } else if (year == LocalDate.now().getYear() - 18) {
-                    if (month <= LocalDate.now().getMonthValue()) {
-                        if (day <= LocalDate.now().getDayOfMonth()) {
-                            try {
-                                dateOfBirth = LocalDate.of(year, month, day);
-                                break;
-                            } catch (Exception e) {
-                                System.out.println("Data inválida!");
-                                //System.out.println(e.getMessage());
-                            }
-                        } else {
-                            System.out.println("Cadastro permitido somente para maiores de 18 anos.");
-                        }
-                    } else {
-                        System.out.println("Cadastro permitido somente para maiores de 18 anos.");
-                    }
-                } else {
-                    try {
-                        dateOfBirth = LocalDate.of(year, month, day);
-                        break;
-                    } catch (Exception e) {
-                        System.out.println("Data inválida!");
-                        //System.out.println(e.getMessage());
-                    }
-                }
-            }
-        }
-        return dateOfBirth;
     }
 
     public List<Client> getClients() {
