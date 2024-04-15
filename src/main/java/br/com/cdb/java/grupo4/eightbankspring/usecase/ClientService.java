@@ -33,7 +33,6 @@ public class ClientService {
     private AccountService accountService;
     @Autowired
     private JdbcTemplateDAOImpl jdbcTemplateDAOImpl;
-    @Autowired
 
     public void addClient(Client client) {
         //Validations
