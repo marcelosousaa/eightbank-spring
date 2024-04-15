@@ -34,63 +34,40 @@ public class ClientService {
     @Autowired
     private JdbcTemplateDAOImpl jdbcTemplateDAOImpl;
     @Autowired
-    private final EmailValidator emailValidator;
-    @Autowired
-    private final CPFValidator cpfValidator;
-    @Autowired
-    private final NameValidator nameValidator;
-    @Autowired
-    private final DateOfBirthValidator dateOfBirthValidator;
-    @Autowired
-    private final PhoneNumberValidator phoneNumberValidator;
-    @Autowired
-    private final ZipCodeValidator zipCodeValidator;
-
-    @Autowired
-    public ClientService(EmailValidator emailValidator, CPFValidator cpfValidator, NameValidator nameValidator,
-                         DateOfBirthValidator dateOfBirthValidator, PhoneNumberValidator phoneNumberValidator,
-                         ZipCodeValidator zipCodeValidator){
-        this.emailValidator = emailValidator;
-        this.cpfValidator = cpfValidator;
-        this.nameValidator = nameValidator;
-        this.dateOfBirthValidator = dateOfBirthValidator;
-        this.phoneNumberValidator = phoneNumberValidator;
-        this.zipCodeValidator = zipCodeValidator;
-    }
 
     public void addClient(Client client) {
         //Validations
         //Email validator
-        if (!emailValidator.validateEmail(client.getEmail())) {
+        if (!EmailValidator.validateEmail(client.getEmail())) {
             throw new IllegalArgumentException("Email Inválido"); //Validador OK
         }
 
         //CPF validator
-        if (!cpfValidator.validateCPF(client.getCpf())) {
+        if (!CpfValidator.validateCPF(client.getCpf())) {
             throw new IllegalArgumentException("CPF Inválido"); //ValIdador OK
         }
 
         //Name validator
-       if(!nameValidator.validateName(client.getName())){
+       if(!NameValidator.validateName(client.getName())){
             throw new IllegalArgumentException("Nome Inválido");
        }
 
        //Date of Birth validator
-       if (!dateOfBirthValidator.validateDateOfBirth(client.getDateOfBirth().toString())) {
+       if (!DateOfBirthValidator.validateDateOfBirth(client.getDateOfBirth().toString())) {
             throw new IllegalArgumentException("Data de nascimento inválida.");
        }
 
-       if (!dateOfBirthValidator.isOfLegalAge(client.getDateOfBirth().toString())) {
+       if (!DateOfBirthValidator.isOfLegalAge(client.getDateOfBirth().toString())) {
             throw new IllegalArgumentException("Cadastro permitido somente para maiores de 18 anos.");
        }
 
        //Phone Number validator
-       if (!phoneNumberValidator.validatePhoneNumber(client.getPhoneNumber())) {
+       if (!PhoneNumberValidator.validatePhoneNumber(client.getPhoneNumber())) {
             throw new IllegalArgumentException("Número de celular Inválido");
        }
 
        //Zip Code validator
-       if (!zipCodeValidator.validateZipCode(client.getAddress().getZipCode())){
+       if (!ZipCodeValidator.validateZipCode(client.getAddress().getZipCode())){
             throw new IllegalArgumentException("CEP Inválido");
        }
 

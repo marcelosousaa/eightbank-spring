@@ -3,9 +3,9 @@ package br.com.cdb.java.grupo4.eightbankspring.utils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CPFValidator {
+public class CpfValidator {
 
-    public boolean validateCPF(String cpf) {
+    public static boolean validateCPF(String cpf) {
         cpf = cpf.replaceAll("[^\\d]", ""); // Remove caracteres não numéricos
 
         if (cpf.length() != 11 || hasAllEqualDigits(cpf)) {

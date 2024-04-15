@@ -29,23 +29,23 @@ public class ClientController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addClient(@RequestBody ClientDTO clientDTO) {
-         try {
-             long startTime = System.currentTimeMillis();
+        try {
+            long startTime = System.currentTimeMillis();
 
-             Client convertedClient = convertToEntity(clientDTO);
-             clientService.addClient(convertedClient);
+            Client convertedClient = convertToEntity(clientDTO);
+            clientService.addClient(convertedClient);
 
-             ResponseEntity<StandardResponse> ok =
-                     ResponseEntity.ok(StandardResponse.builder().message("Cliente cadastrado com sucesso!").build());
+            ResponseEntity<StandardResponse> ok =
+                    ResponseEntity.ok(StandardResponse.builder().message("Cliente cadastrado com sucesso!").build());
 
-             long endTime = System.currentTimeMillis();
-             long timeElapsed = endTime - startTime;
-             LOGGER.info("Tempo decorrido: " + timeElapsed + " milissegundos.");
-             return ok;
-         }catch (IllegalArgumentException ex){
-             LOGGER.error("Erro de validação: {}", ex.getMessage());
-             return ResponseEntity.badRequest().body(StandardResponse.builder().message(ex.getMessage()).build());
-        }catch (Exception ex){
+            long endTime = System.currentTimeMillis();
+            long timeElapsed = endTime - startTime;
+            LOGGER.info("Tempo decorrido: " + timeElapsed + " milissegundos.");
+            return ok;
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error("Erro de validação: {}", ex.getMessage());
+            return ResponseEntity.badRequest().body(StandardResponse.builder().message(ex.getMessage()).build());
+        } catch (Exception ex) {
             LOGGER.error("Erro ao cadastrar cliente: {}", ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StandardResponse.builder().message("Erro ao cadastrar cliente."));
         }

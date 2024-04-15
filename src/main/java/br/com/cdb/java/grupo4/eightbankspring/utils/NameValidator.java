@@ -8,7 +8,7 @@ public class NameValidator {
     private static final int MIN_NAME_LENGTH = 2;
     private static final int MAX_NAME_LENGTH = 100;
 
-    public boolean validateName(String name) {
+    public static boolean validateName(String name) {
         if (name.isEmpty()) {
             return false;
         }
