@@ -3,7 +3,12 @@ package br.com.cdb.java.grupo4.eightbankspring.usecase;
 import br.com.cdb.java.grupo4.eightbankspring.dao.CardDAO;
 import br.com.cdb.java.grupo4.eightbankspring.dao.ClientDAO;
 import br.com.cdb.java.grupo4.eightbankspring.dao.impl.JdbcTemplateDAOImpl;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.AddressDTO;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.ClientDTO;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.CurrentAccountDTO;
+import br.com.cdb.java.grupo4.eightbankspring.dtos.SavingsAccountDTO;
 import br.com.cdb.java.grupo4.eightbankspring.enuns.ClientCategory;
+import br.com.cdb.java.grupo4.eightbankspring.exceptions.InvalidValueException;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.Account;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.CurrentAccount;
 import br.com.cdb.java.grupo4.eightbankspring.model.account.SavingsAccount;
@@ -13,10 +18,12 @@ import br.com.cdb.java.grupo4.eightbankspring.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 @Service
 public class ClientService {
@@ -33,95 +40,140 @@ public class ClientService {
     private AccountService accountService;
     @Autowired
     private JdbcTemplateDAOImpl jdbcTemplateDAOImpl;
-    @Autowired
-    private final EmailValidator emailValidator;
-    @Autowired
-    private final CPFValidator cpfValidator;
-    @Autowired
-    private final NameValidator nameValidator;
-    @Autowired
-    private final DateOfBirthValidator dateOfBirthValidator;
-    @Autowired
-    private final PhoneNumberValidator phoneNumberValidator;
-    @Autowired
-    private final ZipCodeValidator zipCodeValidator;
 
-    @Autowired
-    public ClientService(EmailValidator emailValidator, CPFValidator cpfValidator, NameValidator nameValidator,
-                         DateOfBirthValidator dateOfBirthValidator, PhoneNumberValidator phoneNumberValidator,
-                         ZipCodeValidator zipCodeValidator){
-        this.emailValidator = emailValidator;
-        this.cpfValidator = cpfValidator;
-        this.nameValidator = nameValidator;
-        this.dateOfBirthValidator = dateOfBirthValidator;
-        this.phoneNumberValidator = phoneNumberValidator;
-        this.zipCodeValidator = zipCodeValidator;
-    }
+    public void addClient(ClientDTO clientDTO) throws InvalidValueException {
 
-    public void addClient(Client client) {
-        //Validations
         //Email validator
-        if (!emailValidator.validateEmail(client.getEmail())) {
+        if (!EmailValidator.validateEmail(clientDTO.getEmail())) {
             throw new IllegalArgumentException("Email Inválido"); //Validador OK
         }
 
-        //CPF validator
-        if (!cpfValidator.validateCPF(client.getCpf())) {
-            throw new IllegalArgumentException("CPF Inválido"); //ValIdador OK
-        }
-
-        //Name validator
-       if(!nameValidator.validateName(client.getName())){
-            throw new IllegalArgumentException("Nome Inválido");
-       }
-
-       //Date of Birth validator
-       if (!dateOfBirthValidator.validateDateOfBirth(client.getDateOfBirth().toString())) {
-            throw new IllegalArgumentException("Data de nascimento inválida.");
-       }
-
-       if (!dateOfBirthValidator.isOfLegalAge(client.getDateOfBirth().toString())) {
-            throw new IllegalArgumentException("Cadastro permitido somente para maiores de 18 anos.");
-       }
-
-       //Phone Number validator
-       if (!phoneNumberValidator.validatePhoneNumber(client.getPhoneNumber())) {
-            throw new IllegalArgumentException("Número de celular Inválido");
-       }
-
-       //Zip Code validator
-       if (!zipCodeValidator.validateZipCode(client.getAddress().getZipCode())){
-            throw new IllegalArgumentException("CEP Inválido");
-       }
-
         String passwordString = " ";
         try {
-            passwordString = PasswordService.generateStrongPassword(client.getPassword());
+            passwordString = PasswordService.generateStrongPassword(clientDTO.getPassword());
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
 
-        Address address = client.getAddress();
-        double grossMonthlyIncome = client.getGrossMonthlyIncome();
-        ClientCategory clientCategory = checkClientCategory(client.getGrossMonthlyIncome());
+        //Name validator
+        if (!NameValidator.validateName(clientDTO.getName())) {
+            throw new IllegalArgumentException("Nome Inválido");
+        }
 
-        client = new Client(
-                client.getEmail(),
-                passwordString,
-                client.getName(),
-                client.getCpf(),
-                client.getDateOfBirth(),
-                address,
-                clientCategory,
-                client.getPhoneNumber(),
-                grossMonthlyIncome
+        //CPF validator
+        if (!CpfValidator.validateCPF(clientDTO.getCpf())) {
+            throw new IllegalArgumentException("CPF Inválido"); //ValIdador OK
+        }
+
+        //Date of Birth validator
+       if (!DateOfBirthValidator.validateDateOfBirth(clientDTO.getDateOfBirth())) {
+            throw new IllegalArgumentException("Data de nascimento inválida.");
+       }
+
+       if (!DateOfBirthValidator.isOfLegalAge(clientDTO.getDateOfBirth())) {
+            throw new IllegalArgumentException("Cadastro permitido somente para maiores de 18 anos.");
+       }
+
+       LocalDate convertedDateOfBirth = convertDateOfBirth(clientDTO.getDateOfBirth());
+
+        Address address = validateAddressDTO(clientDTO.getAddress());
+
+        //Phone Number validator
+       if (!PhoneNumberValidator.validatePhoneNumber(clientDTO.getPhoneNumber())) {
+            throw new IllegalArgumentException("Número de celular Inválido");
+       }
+
+       //Zip Code validator
+        if (!ZipCodeValidator.validateZipCode(clientDTO.getAddress().getZipCode())) {
+            throw new IllegalArgumentException("CEP Inválido");
+       }
+
+        try {
+            double grossMonthlyIncome = Double.parseDouble(clientDTO.getGrossMonthlyIncome());
+
+            if (grossMonthlyIncome < 0) {
+                throw new InvalidValueException("A renda informada é inválida!");
+            }
+
+            ClientCategory clientCategory = checkClientCategory(grossMonthlyIncome);
+
+            Client client = new Client(
+                    clientDTO.getEmail(),
+                    passwordString,
+                    clientDTO.getName(),
+                    clientDTO.getCpf(),
+                    convertedDateOfBirth,
+                    address,
+                    clientCategory,
+                    clientDTO.getPhoneNumber(),
+                    grossMonthlyIncome
+            );
+
+            //SALVA NO BANCO
+            jdbcTemplateDAOImpl.saveClient(client);
+
+            //REGISTRA AS CONTAS e SALVA NO BANCO
+            registerClientAccounts(client);
+
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Renda está no formato inválido.");
+        }
+    }
+
+    private Address validateAddressDTO(AddressDTO addressDTO) throws RuntimeException {
+        long addressNumber;
+        String state;
+        String zipCode;
+
+        try {
+            addressNumber = Long.parseLong(addressDTO.getNumber());
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Número do endereço está em um formato inválido! ");
+        }
+
+        if (!StateValidator.validateStateFormat(addressDTO.getState())) {
+            throw new InvalidValueException("Estado inválido! Por favor, informar a sigla.");
+        } else {
+            state = addressDTO.getState();
+        }
+
+        if (!ZipCodeValidator.validateZipCode(addressDTO.getZipCode())) {
+            throw new InvalidValueException("CEP inválido!");
+        } else {
+            zipCode = addressDTO.getZipCode();
+        }
+
+        return new Address(
+                addressDTO.getStreetName(),
+                addressNumber,
+                addressDTO.getDistrict(),
+                addressDTO.getCity(),
+                state,
+                zipCode,
+                addressDTO.getAddressComplement()
         );
+    }
 
-        //SALVA NO BANCO
-        jdbcTemplateDAOImpl.saveClient(client);
+    private LocalDate convertDateOfBirth(String dateOfBirth) {
+        LocalDate convertedDob = null;
+        BufferedReader reader;
 
-        //REGISTRA AS CONTAS e SALVA NO BANCO
-        registerClientAccounts(client);
+        try{
+            reader = new BufferedReader(new StringReader(dateOfBirth));
+
+            while ((dateOfBirth = reader.readLine()) != null) {
+                String[] dateOfBirthFields = dateOfBirth.split("-");
+                int year = Integer.parseInt(dateOfBirthFields[0]);
+                int month = Integer.parseInt(dateOfBirthFields[1]);
+                int dayOfMonth = Integer.parseInt(dateOfBirthFields[2]);
+                convertedDob = LocalDate.of(year, month, dayOfMonth);
+            }
+
+        } catch (IOException e){
+            throw new RuntimeException();
+        }
+
+        return convertedDob;
 
     }
 
@@ -137,10 +189,6 @@ public class ClientService {
                 jdbcTemplateDAOImpl.saveCurrentAccount(client.getCpf(), (CurrentAccount) account);
             }
         }
-    }
-
-    public List<Client> getClients() {
-        return jdbcTemplateDAOImpl.listAllClients();
     }
 
 
@@ -199,7 +247,15 @@ public class ClientService {
         return clientCategory;
     }
 
-    public List<Account> showClientAccounts(String cpf) {
-        return jdbcTemplateDAOImpl.findAccountsByCpf(cpf);
+    public List<SavingsAccountDTO> showClientSavingsAccounts(String cpf) {
+        return jdbcTemplateDAOImpl.findSavingsAccountByCpf(cpf);
+    }
+
+    public List<CurrentAccountDTO> showClientCurrentAccounts(String cpf) {
+        return jdbcTemplateDAOImpl.findCurrentAccountByCpf(cpf);
+    }
+
+    public void depositOnClientAccount(long accountNumber, double value, String accountType) {
+        jdbcTemplateDAOImpl.depositValue(accountNumber, value, accountType);
     }
 }

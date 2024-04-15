@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public class PhoneNumberValidator {
     private static final Pattern PHONE_PATTERN = Pattern.compile("\\(\\d{2}\\)\\s\\d{4,5}-\\d{4}");
 
-    public boolean validatePhoneNumber(String phoneNumberString) {
+    public static boolean validatePhoneNumber(String phoneNumberString) {
         if (phoneNumberString == null || phoneNumberString.isBlank()){
             return false;
         }

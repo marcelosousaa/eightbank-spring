@@ -13,17 +13,21 @@ public class DateOfBirthValidator {
 
     // Verifica se a data está no formato correto e se o usuário tem 18 anos ou mais
 
-    public boolean validateDateOfBirth(String dob) {
-        try {
-            // Tenta parsear a data; se for bem-sucedido, retorna verdadeiro
+    public static boolean validateDateOfBirth(String dob) {
+        boolean validationStatus = false;
+
+        // Tenta parsear a data; se for bem-sucedido, retorna verdadeiro
+        try{
             LocalDate.parse(dob, DATE_FORMATTER);
-            return true;
-        } catch (DateTimeParseException e) {
-            return false;
+            validationStatus = true;
+        } catch (Exception e){
+            System.out.println(e.getMessage());
         }
+
+        return validationStatus;
     }
 
-    public boolean isOfLegalAge(String dob) {
+    public static boolean isOfLegalAge(String dob) {
         try {
             LocalDate birthDate = LocalDate.parse(dob, DATE_FORMATTER);
             LocalDate currentDate = LocalDate.now();
