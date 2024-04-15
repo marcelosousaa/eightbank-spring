@@ -1,11 +1,14 @@
 package br.com.cdb.java.grupo4.eightbankspring.utils;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class NameValidator {
 
     private static final int MIN_NAME_LENGTH = 2;
     private static final int MAX_NAME_LENGTH = 100;
 
-    public static boolean validateName(String name) {
+    public boolean validateName(String name) {
         if (name.isEmpty()) {
             return false;
         }

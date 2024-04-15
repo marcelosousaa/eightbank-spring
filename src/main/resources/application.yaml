@@ -5,7 +5,7 @@ spring:
     platform: postgres
     url: jdbc:postgresql://localhost:5432/eightbank?ApplicationName=Eightbank
     username: postgres
-    password: admin
+    password: 151573
     driverClassName: org.postgresql.Driver
   hikari:
     maximum-pool-size: 3

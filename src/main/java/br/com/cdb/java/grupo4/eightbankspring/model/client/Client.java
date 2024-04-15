@@ -2,6 +2,7 @@ package br.com.cdb.java.grupo4.eightbankspring.model.client;
 
 import br.com.cdb.java.grupo4.eightbankspring.enuns.ClientCategory;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 
